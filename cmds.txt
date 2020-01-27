@@ -1,0 +1,7 @@
+kubectl create -n ecepxie -f .\darts\login.yaml
+kubectl apply -f .\darts\storage.yaml
+kubectl cp darts kunlin:/kunlin-volume
+kubectl exec kunlin -- ls -la /kunlin-volume
+kubectl exec -it kunlin -- /bin/bash
+
+export PATH=/usr/local/cuda-10.1/bin:/usr/local/cuda-10.1/nsight-compute-2019.4.0${PATH:+:${PATH}}

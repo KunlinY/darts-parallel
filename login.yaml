@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kunlin
+spec:
+  containers:
+  - name: vol-container
+    image: gitlab-registry.nautilus.optiputer.net/vamsirk/research-containers
+    command: ["/bin/bash"]
+    args: ["-c", "sleep infinity"]
+    resources:
+      requests:
+        memory: "8Gi"
+        nvidia.com/gpu: 1
+        cpu: 2
+      limits:
+        nvidia.com/gpu: 1
+        memory: "8Gi"
+        cpu: 2
+    volumeMounts:
+    - name: kunlin-volume     #use your own volune path
+      mountPath: /kunlin-volume
+  restartPolicy: Never
+  volumes:
+    - name: kunlin-volume
+      persistentVolumeClaim:
+        claimName: kunlin-volume

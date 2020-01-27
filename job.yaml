@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    k8s-app: research
+  generateName: darts-job
+  namespace: ecepxie
+spec:
+  template:
+    spec:
+      containers:
+      - name: darts
+        image: gitlab-registry.nautilus.optiputer.net/vamsirk/research-containers
+        command: ["/bin/bash"]
+        args: ["-c", "ls && cd /kunlin-volume/darts/cnn && nohup python train_search.py --unrolled --report_freq 10 &"]
+        volumeMounts:
+        - name: kunlin-volume
+          mountPath: /kunlin-volume
+        resources:
+          limits:
+            memory: 8Gi
+            cpu: "2"
+            nvidia.com/gpu: "1"
+          requests:
+            memory: 8Gi
+            cpu: "2"
+            nvidia.com/gpu: "1"
+      restartPolicy: Never
+      volumes:
+        - name: kunlin-volume
+          persistentVolumeClaim:
+            claimName: kunlin-volume
+  backoffLimit: 5

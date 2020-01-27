@@ -1,0 +1,58 @@
+apiVersion: batch/v1
+kind: Job # Deployment will automatically restart when killed. Use Pod if not needed
+metadata:
+  labels:
+    k8s-app: research
+  generateName: ky-darts
+  namespace: ecepxie
+  name: ky-darts
+spec:
+  template:
+    metadata:
+      labels:
+        k8s-app: research
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: research
+        image: gitlab-registry.nautilus.optiputer.net/vamsirk/research-containers
+        imagePullPolicy: Always
+        workingDir: /ceph/kunlin/kunlin-volume/darts/cnn
+        command: ["/bin/bash","run.sh"]
+        resources:
+          requests:
+            memory: "24Gi"
+            cpu: "3"
+            nvidia.com/gpu: 2
+          limits:
+            memory: "30Gi"
+            cpu: "4"
+            nvidia.com/gpu: 2
+        volumeMounts:
+        - mountPath: /dev/shm
+          name: dshm
+        - mountPath: /ceph
+          name: ceph
+      volumes:
+      - name: dshm
+        emptyDir:
+          medium: Memory
+      - name: ceph
+        flexVolume:
+          driver: ceph.rook.io/rook
+          fsType: ceph
+          options:
+            clusterNamespace: rook
+            fsName: nautilusfs
+            path: /ecepxie
+            mountUser: ecepxie
+            mountSecret: ceph-fs-secret
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: gpu-type
+                operator: In # Use NotIn for other types
+                values:
+                - 1080Ti
