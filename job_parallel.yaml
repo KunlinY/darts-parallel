@@ -3,9 +3,9 @@ kind: Job # Deployment will automatically restart when killed. Use Pod if not ne
 metadata:
   labels:
     k8s-app: research
-  generateName: darts
+  generateName: darts-parallel
   namespace: ecepxie
-  name: darts
+  name: darts-parallel
 spec:
   template:
     metadata:
@@ -18,16 +18,16 @@ spec:
         image: gitlab-registry.nautilus.optiputer.net/vamsirk/research-containers
         imagePullPolicy: Always
         workingDir: /ceph/darts
-        command: ["/bin/bash","run.sh"]
+        command: ["/bin/bash","run_parallel.sh"]
         resources:
           requests:
             memory: "24Gi"
             cpu: "3"
-            nvidia.com/gpu: 1
+            nvidia.com/gpu: 2
           limits:
             memory: "30Gi"
             cpu: "4"
-            nvidia.com/gpu: 1
+            nvidia.com/gpu: 2
         volumeMounts:
 #        - mountPath: /dev/shm
 #          name: dshm
