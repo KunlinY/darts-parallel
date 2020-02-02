@@ -4,8 +4,9 @@ metadata:
   name: kunlin-volume  #use your preferred name
 spec:
   storageClassName: rook-cephfs
+  volumeMode: Filesystem
   accessModes:
-  - ReadWriteMany
+    - ReadWriteMany
   resources:
     requests:
       storage: 1000Gi

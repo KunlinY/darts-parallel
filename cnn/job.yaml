@@ -3,9 +3,9 @@ kind: Job # Deployment will automatically restart when killed. Use Pod if not ne
 metadata:
   labels:
     k8s-app: research
-  generateName: ky-darts
+  generateName: darts
   namespace: ecepxie
-  name: ky-darts
+  name: darts
 spec:
   template:
     metadata:
@@ -17,7 +17,7 @@ spec:
       - name: research
         image: gitlab-registry.nautilus.optiputer.net/vamsirk/research-containers
         imagePullPolicy: Always
-        workingDir: /ceph/kunlin/kunlin-volume/darts/cnn
+        workingDir: /ceph/darts/cnn
         command: ["/bin/bash","run.sh"]
         resources:
           requests:
@@ -29,24 +29,28 @@ spec:
             cpu: "4"
             nvidia.com/gpu: 2
         volumeMounts:
-        - mountPath: /dev/shm
-          name: dshm
+#        - mountPath: /dev/shm
+#          name: dshm
         - mountPath: /ceph
-          name: ceph
+          name: kunlin-volume
+#      volumes:
+#      - name: dshm
+#        emptyDir:
+#          medium: Memory
+#      - name: ceph
+#        flexVolume:
+#          driver: ceph.rook.io/rook
+#          fsType: ceph
+#          options:
+#            clusterNamespace: rook
+#            fsName: nautilusfs
+#            path: /ecepxie
+#            mountUser: ecepxie
+#            mountSecret: ceph-fs-secret
       volumes:
-      - name: dshm
-        emptyDir:
-          medium: Memory
-      - name: ceph
-        flexVolume:
-          driver: ceph.rook.io/rook
-          fsType: ceph
-          options:
-            clusterNamespace: rook
-            fsName: nautilusfs
-            path: /ecepxie
-            mountUser: ecepxie
-            mountSecret: ceph-fs-secret
+        - name: kunlin-volume
+          persistentVolumeClaim:
+            claimName: kunlin-volume
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
