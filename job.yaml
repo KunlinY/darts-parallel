@@ -1,33 +1,62 @@
 apiVersion: batch/v1
-kind: Job
+kind: Job # Deployment will automatically restart when killed. Use Pod if not needed
 metadata:
   labels:
     k8s-app: research
-  generateName: darts-job
+  generateName: darts
   namespace: ecepxie
+  name: darts
 spec:
   template:
+    metadata:
+      labels:
+        k8s-app: research
     spec:
-      containers:
-      - name: darts
-        image: gitlab-registry.nautilus.optiputer.net/vamsirk/research-containers
-        command: ["/bin/bash"]
-        args: ["-c", "ls && cd /kunlin-volume/darts/cnn && nohup python train_search.py --unrolled --report_freq 10 &"]
-        volumeMounts:
-        - name: kunlin-volume
-          mountPath: /kunlin-volume
-        resources:
-          limits:
-            memory: 8Gi
-            cpu: "2"
-            nvidia.com/gpu: "1"
-          requests:
-            memory: 8Gi
-            cpu: "2"
-            nvidia.com/gpu: "1"
       restartPolicy: Never
+      containers:
+      - name: research
+        image: gitlab-registry.nautilus.optiputer.net/vamsirk/research-containers
+        imagePullPolicy: Always
+        workingDir: /ceph/darts
+        command: ["/bin/bash","cnn/run.sh"]
+        resources:
+          requests:
+            memory: "24Gi"
+            cpu: "3"
+            nvidia.com/gpu: 2
+          limits:
+            memory: "30Gi"
+            cpu: "4"
+            nvidia.com/gpu: 2
+        volumeMounts:
+#        - mountPath: /dev/shm
+#          name: dshm
+        - mountPath: /ceph
+          name: kunlin-volume
+#      volumes:
+#      - name: dshm
+#        emptyDir:
+#          medium: Memory
+#      - name: ceph
+#        flexVolume:
+#          driver: ceph.rook.io/rook
+#          fsType: ceph
+#          options:
+#            clusterNamespace: rook
+#            fsName: nautilusfs
+#            path: /ecepxie
+#            mountUser: ecepxie
+#            mountSecret: ceph-fs-secret
       volumes:
         - name: kunlin-volume
           persistentVolumeClaim:
             claimName: kunlin-volume
-  backoffLimit: 5
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: gpu-type
+                operator: In # Use NotIn for other types
+                values:
+                - 1080Ti
