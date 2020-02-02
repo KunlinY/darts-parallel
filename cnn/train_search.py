@@ -117,6 +117,7 @@ def main():
         print(F.softmax(model.alphas_reduce, dim=-1))
 
         # training
+        print(len(train_queue))
         train_acc, train_obj = train(train_queue, valid_queue, model, architect, criterion, optimizer, lr)
         logging.info('train_acc %f', train_acc)
 
@@ -163,7 +164,6 @@ def train(train_queue, valid_queue, model, architect, criterion, optimizer, lr):
         if step % args.report_freq == 0:
             logging.info('train %03d %e %f %f', step, objs.avg, top1.avg, top5.avg)
             cpuStats()
-            memReport()
             logging.info("=================")
 
     return top1.avg, objs.avg
@@ -192,7 +192,6 @@ def infer(valid_queue, model, criterion):
         if step % args.report_freq == 0:
             logging.info('valid %03d %e %f %f', step, objs.avg, top1.avg, top5.avg)
             cpuStats()
-            memReport()
             logging.info("=================")
 
     return top1.avg, objs.avg
