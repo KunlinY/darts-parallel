@@ -18,16 +18,16 @@ spec:
         image: gitlab-registry.nautilus.optiputer.net/vamsirk/research-containers
         imagePullPolicy: Always
         workingDir: /ceph/darts
-        command: ["/bin/bash","cnn/run.sh"]
+        command: ["/bin/bash","run.sh"]
         resources:
           requests:
             memory: "24Gi"
             cpu: "3"
-            nvidia.com/gpu: 2
+            nvidia.com/gpu: 1
           limits:
             memory: "30Gi"
             cpu: "4"
-            nvidia.com/gpu: 2
+            nvidia.com/gpu: 1
         volumeMounts:
 #        - mountPath: /dev/shm
 #          name: dshm
