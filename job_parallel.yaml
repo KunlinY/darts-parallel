@@ -21,11 +21,11 @@ spec:
         command: ["/bin/bash","run_pt_parallel.sh"]
         resources:
           requests:
-            memory: "30Gi"
+            memory: "32Gi"
             cpu: "4"
             nvidia.com/gpu: 2
           limits:
-            memory: "30Gi"
+            memory: "32Gi"
             cpu: "4"
             nvidia.com/gpu: 2
         volumeMounts:

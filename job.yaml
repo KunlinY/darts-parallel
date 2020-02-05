@@ -21,12 +21,12 @@ spec:
         command: ["/bin/bash","run_pt.sh"]
         resources:
           requests:
-            memory: "24Gi"
-            cpu: "3"
+            memory: "32Gi"
+            cpu: "2"
             nvidia.com/gpu: 1
           limits:
-            memory: "30Gi"
-            cpu: "4"
+            memory: "32Gi"
+            cpu: "2"
             nvidia.com/gpu: 1
         volumeMounts:
 #        - mountPath: /dev/shm
