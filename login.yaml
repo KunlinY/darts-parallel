@@ -18,7 +18,7 @@ spec:
         memory: "8Gi"
         cpu: 2
     volumeMounts:
-    - name: kunlin-volume     #use your own volune path
+    - name: kunlin-volume     #use your own volume path
       mountPath: /kunlin-volume
   restartPolicy: Never
   volumes:

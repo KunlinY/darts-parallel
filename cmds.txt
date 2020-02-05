@@ -4,4 +4,4 @@ kubectl cp darts kunlin:/kunlin-volume
 kubectl exec kunlin -- ls -la /kunlin-volume
 kubectl exec -it kunlin -- /bin/bash
 
-export PATH=/usr/local/cuda-10.1/bin:/usr/local/cuda-10.1/nsight-compute-2019.4.0${PATH:+:${PATH}}
+export PATH=/usr/local/cuda-10.1/bin:/usr/local/cuda-10.1/haodi -compute-2019.4.0${PATH:+:${PATH}}

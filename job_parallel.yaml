@@ -18,11 +18,11 @@ spec:
         image: gitlab-registry.nautilus.optiputer.net/vamsirk/research-containers
         imagePullPolicy: Always
         workingDir: /ceph/darts
-        command: ["/bin/bash","run_parallel.sh"]
+        command: ["/bin/bash","run_pt_parallel.sh"]
         resources:
           requests:
-            memory: "24Gi"
-            cpu: "3"
+            memory: "30Gi"
+            cpu: "4"
             nvidia.com/gpu: 2
           limits:
             memory: "30Gi"

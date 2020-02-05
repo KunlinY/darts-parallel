@@ -18,7 +18,7 @@ spec:
         image: gitlab-registry.nautilus.optiputer.net/vamsirk/research-containers
         imagePullPolicy: Always
         workingDir: /ceph/darts
-        command: ["/bin/bash","run.sh"]
+        command: ["/bin/bash","run_pt.sh"]
         resources:
           requests:
             memory: "24Gi"
