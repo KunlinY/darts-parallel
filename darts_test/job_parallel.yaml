@@ -40,16 +40,6 @@ spec:
       - name: kunlin-volume
         persistentVolumeClaim:
           claimName: kunlin-volume
-#      - name: ceph
-#        flexVolume:
-#          driver: ceph.rook.io/rook
-#          fsType: ceph
-#          options:
-#            clusterNamespace: rook
-#            fsName: nautilusfs
-#            path: /ecepxie
-#            mountUser: ecepxie
-#            mountSecret: ceph-fs-secret
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
