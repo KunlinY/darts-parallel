@@ -3,9 +3,9 @@ kind: Job # Deployment will automatically restart when killed. Use Pod if not ne
 metadata:
   labels:
     k8s-app: research
-  generateName: test-research
+  generateName: darts-kl
   namespace: ecepxie
-  name: test-research
+  name: darts-kl
 spec:
   template:
     metadata:
@@ -23,11 +23,11 @@ spec:
           requests:
             memory: "64Gi"
             cpu: "6"
-            nvidia.com/gpu: 2
+            nvidia.com/gpu: 1
           limits:
             memory: "64Gi"
             cpu: "6"
-            nvidia.com/gpu: 2
+            nvidia.com/gpu: 1
         volumeMounts:
         - mountPath: /dev/shm
           name: dshm
