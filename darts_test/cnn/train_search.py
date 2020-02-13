@@ -7,6 +7,7 @@ import torch
 import utils
 import logging
 import argparse
+import torch
 import torch.nn as nn
 import torch.utils
 import torch.nn.functional as F
@@ -77,7 +78,8 @@ def main():
     model = model.cuda()
     if len(gpus) > 1:
         print("True")
-        model = nn.parallel.DistributedDataParallel(model, device_ids=gpus, output_device=gpus[0])
+        # torch.distributed.init_process_group(backend='nccl', world_size=4, init_method='...')
+        model = nn.parallel.DataParallel(model, device_ids=gpus, output_device=gpus[0])
         model = model.module
 
     arch_params = list(map(id, model.arch_parameters()))
