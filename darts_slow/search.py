@@ -145,7 +145,9 @@ def train(train_loader, valid_loader, model, architect, w_optim, alpha_optim, lr
 
         for param in model.parameters():
             print("Before: ", param.grad)
-            param.grad += gaussian.MultivariateNormal(torch.zeros(param.shape), torch.eye(param.shape[-1])).sample()
+            param.grad += gaussian.MultivariateNormal(
+                torch.zeros(param.grad.shape),
+                torch.eye(param.grad.shape[-1])).sample()
             print("After: ", param.grad)
 
         w_optim.step()
