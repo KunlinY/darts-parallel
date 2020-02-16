@@ -142,7 +142,9 @@ def train(train_loader, valid_loader, model, architect, w_optim, alpha_optim, lr
         nn.utils.clip_grad_norm_(model.weights(), config.w_grad_clip)
 
         for param in model.parameters():
+            print("Before: ", param.grad)
             param.grad += gaussian.MultivariateNormal(torch.zeros(param.shape), torch.eye(param.shape[-1])).sample()
+            print("After: ", param.grad)
 
         w_optim.step()
 
