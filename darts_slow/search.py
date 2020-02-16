@@ -2,6 +2,7 @@
 import os
 import torch
 import torch.nn as nn
+import torch.distributions.multivariate_normal as gaussian
 import numpy as np
 from tensorboardX import SummaryWriter
 from config import SearchConfig
@@ -139,6 +140,10 @@ def train(train_loader, valid_loader, model, architect, w_optim, alpha_optim, lr
         loss.backward()
         # gradient clipping
         nn.utils.clip_grad_norm_(model.weights(), config.w_grad_clip)
+
+        for param in model.parameters():
+            param.grad += gaussian.MultivariateNormal(torch.zeros(param.shape), torch.eye(param.shape[-1])).sample()
+
         w_optim.step()
 
         prec1, prec5 = utils.accuracy(logits, trn_y, topk=(1, 5))

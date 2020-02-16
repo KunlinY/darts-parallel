@@ -3,9 +3,9 @@ kind: Job # Deployment will automatically restart when killed. Use Pod if not ne
 metadata:
   labels:
     k8s-app: research
-  generateName: pt
+  generateName: darts-kl
   namespace: ecepxie
-  name: pt
+  name: darts-kl
 spec:
   template:
     metadata:
