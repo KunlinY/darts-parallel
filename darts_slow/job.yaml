@@ -17,7 +17,7 @@ spec:
       - name: research
         image: gitlab-registry.nautilus.optiputer.net/vamsirk/research-containers
         imagePullPolicy: Always
-        workingDir: /ceph/darts/darts_slow
+        workingDir: /ceph/darts-parallel/darts_slow
         command: ["/bin/bash","run_darts.sh"]
         resources:
           requests:
