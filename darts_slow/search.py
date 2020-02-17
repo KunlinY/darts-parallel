@@ -11,7 +11,6 @@ from models.search_cnn import SearchCNNController
 from architect import Architect
 from visualize import plot
 
-
 config = SearchConfig()
 
 device = torch.device("cuda")
@@ -86,7 +85,7 @@ def main():
         train(train_loader, valid_loader, model, architect, w_optim, alpha_optim, lr, epoch)
 
         # validation
-        cur_step = (epoch+1) * len(train_loader)
+        cur_step = (epoch + 1) * len(train_loader)
         top1 = validate(valid_loader, model, epoch, cur_step)
 
         # log
@@ -95,8 +94,8 @@ def main():
         logger.info("genotype = {}".format(genotype))
 
         # genotype as a image
-        plot_path = os.path.join(config.plot_path, "EP{:02d}".format(epoch+1))
-        caption = "Epoch {}".format(epoch+1)
+        plot_path = os.path.join(config.plot_path, "EP{:02d}".format(epoch + 1))
+        caption = "Epoch {}".format(epoch + 1)
         plot(genotype.normal, plot_path + "-normal", caption)
         plot(genotype.reduce, plot_path + "-reduce", caption)
 
@@ -119,7 +118,7 @@ def train(train_loader, valid_loader, model, architect, w_optim, alpha_optim, lr
     top5 = utils.AverageMeter()
     losses = utils.AverageMeter()
 
-    cur_step = epoch*len(train_loader)
+    cur_step = epoch * len(train_loader)
     writer.add_scalar('train/lr', lr, cur_step)
 
     model.train()
@@ -144,11 +143,13 @@ def train(train_loader, valid_loader, model, architect, w_optim, alpha_optim, lr
         nn.utils.clip_grad_norm_(model.weights(), config.w_grad_clip)
 
         for param in model.parameters():
-            print("Before: ", param.grad)
-            param.grad += gaussian.MultivariateNormal(
+            # print("Before: ", param.grad)
+            noise = gaussian.MultivariateNormal(
                 torch.zeros(param.grad.shape),
-                torch.eye(param.grad.shape[-1])).sample()
-            print("After: ", param.grad)
+                torch.eye(param.grad.shape[-1])).sample().to(param.grad.device)
+            # print("Noise: ", noise)
+            param.grad += noise
+            # print("After: ", param.grad)
 
         w_optim.step()
 
@@ -157,11 +158,11 @@ def train(train_loader, valid_loader, model, architect, w_optim, alpha_optim, lr
         top1.update(prec1.item(), N)
         top5.update(prec5.item(), N)
 
-        if step % config.print_freq == 0 or step == len(train_loader)-1:
+        if step % config.print_freq == 0 or step == len(train_loader) - 1:
             logger.info(
                 "Train: [{:2d}/{}] Step {:03d}/{:03d} Loss {losses.avg:.3f} "
                 "Prec@(1,5) ({top1.avg:.1%}, {top5.avg:.1%})".format(
-                    epoch+1, config.epochs, step, len(train_loader)-1, losses=losses,
+                    epoch + 1, config.epochs, step, len(train_loader) - 1, losses=losses,
                     top1=top1, top5=top5))
 
         writer.add_scalar('train/loss', loss.item(), cur_step)
@@ -169,7 +170,7 @@ def train(train_loader, valid_loader, model, architect, w_optim, alpha_optim, lr
         writer.add_scalar('train/top5', prec5.item(), cur_step)
         cur_step += 1
 
-    logger.info("Train: [{:2d}/{}] Final Prec@1 {:.4%}".format(epoch+1, config.epochs, top1.avg))
+    logger.info("Train: [{:2d}/{}] Final Prec@1 {:.4%}".format(epoch + 1, config.epochs, top1.avg))
 
 
 def validate(valid_loader, model, epoch, cur_step):
@@ -192,18 +193,18 @@ def validate(valid_loader, model, epoch, cur_step):
             top1.update(prec1.item(), N)
             top5.update(prec5.item(), N)
 
-            if step % config.print_freq == 0 or step == len(valid_loader)-1:
+            if step % config.print_freq == 0 or step == len(valid_loader) - 1:
                 logger.info(
                     "Valid: [{:2d}/{}] Step {:03d}/{:03d} Loss {losses.avg:.3f} "
                     "Prec@(1,5) ({top1.avg:.1%}, {top5.avg:.1%})".format(
-                        epoch+1, config.epochs, step, len(valid_loader)-1, losses=losses,
+                        epoch + 1, config.epochs, step, len(valid_loader) - 1, losses=losses,
                         top1=top1, top5=top5))
 
     writer.add_scalar('val/loss', losses.avg, cur_step)
     writer.add_scalar('val/top1', top1.avg, cur_step)
     writer.add_scalar('val/top5', top5.avg, cur_step)
 
-    logger.info("Valid: [{:2d}/{}] Final Prec@1 {:.4%}".format(epoch+1, config.epochs, top1.avg))
+    logger.info("Valid: [{:2d}/{}] Final Prec@1 {:.4%}".format(epoch + 1, config.epochs, top1.avg))
 
     return top1.avg
 
