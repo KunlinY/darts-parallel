@@ -75,8 +75,8 @@ def main():
     architect = Architect(model, config.w_momentum, config.w_weight_decay)
 
     for param in model.parameters():
-        shape_gaussian[param.grad.shape] = gaussian.MultivariateNormal(
-            torch.zeros(param.grad.shape), torch.eye(param.grad.shape[-1]))
+        shape_gaussian[param.data.shape] = gaussian.MultivariateNormal(
+            torch.zeros(param.data.shape), torch.eye(param.data.shape[-1]))
 
     # training loop
     best_top1 = 0.
