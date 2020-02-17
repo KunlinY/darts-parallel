@@ -22,6 +22,8 @@ writer.add_text('config', config.as_markdown(), 0)
 logger = utils.get_logger(os.path.join(config.path, "{}.log".format(config.name)))
 config.print_params(logger.info)
 
+shape_gaussian = {}
+
 
 def main():
     logger.info("Logger is set - training start")
@@ -71,6 +73,10 @@ def main():
     lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
         w_optim, config.epochs, eta_min=config.w_lr_min)
     architect = Architect(model, config.w_momentum, config.w_weight_decay)
+
+    for param in model.parameters():
+        shape_gaussian[param.grad.shape] = gaussian.MultivariateNormal(
+            torch.zeros(param.grad.shape), torch.eye(param.grad.shape[-1]))
 
     # training loop
     best_top1 = 0.
@@ -143,13 +149,8 @@ def train(train_loader, valid_loader, model, architect, w_optim, alpha_optim, lr
         nn.utils.clip_grad_norm_(model.weights(), config.w_grad_clip)
 
         for param in model.parameters():
-            # print("Before: ", param.grad)
-            noise = gaussian.MultivariateNormal(
-                torch.zeros(param.grad.shape),
-                torch.eye(param.grad.shape[-1])).sample().to(param.grad.device)
-            # print("Noise: ", noise)
+            noise = shape_gaussian[param.grad.shape].sample().to(param.grad.device)
             param.grad += noise
-            # print("After: ", param.grad)
 
         w_optim.step()
 
