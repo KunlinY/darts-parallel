@@ -3,9 +3,9 @@ kind: Job # Deployment will automatically restart when killed. Use Pod if not ne
 metadata:
   labels:
     k8s-app: research
-  generateName: darts-parallel
+  generateName: darts-parallel-ky
   namespace: ecepxie
-  name: darts-parallel
+  name: darts-parallel-ky
 spec:
   template:
     metadata:
@@ -21,12 +21,12 @@ spec:
         command: ["/bin/bash","run_darts_parallel.sh"]
         resources:
           requests:
-            memory: "32Gi"
-            cpu: "8"
+            memory: "8Gi"
+            cpu: "4"
             nvidia.com/gpu: 2
           limits:
-            memory: "32Gi"
-            cpu: "8"
+            memory: "8Gi"
+            cpu: "4"
             nvidia.com/gpu: 2
         volumeMounts:
         - mountPath: /dev/shm
