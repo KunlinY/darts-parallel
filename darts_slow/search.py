@@ -150,7 +150,7 @@ def train(train_loader, valid_loader, model, architect, w_optim, alpha_optim, lr
 
         for param in model.parameters():
             noise = shape_gaussian[param.grad.shape].sample().to(param.grad.device)
-            param.grad += noise
+            param.grad += noise / config.batch_size
 
         w_optim.step()
 
