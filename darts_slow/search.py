@@ -146,6 +146,7 @@ def train(train_loader, valid_loader, model, architect, w_optim, alpha_optim, lr
         # gradient clipping
         nn.utils.clip_grad_norm_(model.weights(), config.w_grad_clip)
 
+        print("noise start")
         for param in model.parameters():
             noise = shape_gaussian[param.grad.shape].sample() / config.batch_size
             noise = noise.to(param.grad.device)

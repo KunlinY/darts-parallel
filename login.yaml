@@ -10,13 +10,13 @@ spec:
     args: ["-c", "sleep infinity"]
     resources:
       requests:
-        memory: "8Gi"
+        memory: "4Gi"
         nvidia.com/gpu: 1
-        cpu: 2
+        cpu: 1
       limits:
         nvidia.com/gpu: 1
-        memory: "8Gi"
-        cpu: 2
+        memory: "4Gi"
+        cpu: 1
     volumeMounts:
     - name: kunlin-volume     #use your own volume path
       mountPath: /kunlin-volume
