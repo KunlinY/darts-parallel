@@ -119,7 +119,6 @@ def main():
 
 
 def train(train_loader, valid_loader, model, architect, w_optim, alpha_optim, lr, epoch):
-    logger.info("Enter train")
     top1 = utils.AverageMeter()
     top5 = utils.AverageMeter()
     losses = utils.AverageMeter()
@@ -135,11 +134,13 @@ def train(train_loader, valid_loader, model, architect, w_optim, alpha_optim, lr
         N = trn_X.size(0)
 
         # phase 2. architect step (alpha)
+        logger.info("phase 2")
         alpha_optim.zero_grad()
         architect.unrolled_backward(trn_X, trn_y, val_X, val_y, lr, w_optim)
         alpha_optim.step()
 
         # phase 1. child network step (w)
+        logger.info("phase 1")
         w_optim.zero_grad()
         logits = model(trn_X)
         loss = model.criterion(logits, trn_y)
