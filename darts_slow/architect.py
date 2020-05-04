@@ -63,12 +63,15 @@ class Architect():
             w_optim: weights optimizer - for virtual step
         """
         # do virtual step (calc w`)
+        print("virtual step")
         self.virtual_step(trn_X, trn_y, xi, w_optim)
 
         # calc unrolled loss
+        print("unrolled loss")
         loss = self.v_net.loss(val_X, val_y) # L_val(w`)
 
         # compute gradient
+        print("compute gradient")
         v_alphas = tuple(self.v_net.alphas())
         v_weights = tuple(self.v_net.weights())
         v_grads = torch.autograd.grad(loss, v_alphas + v_weights)
@@ -80,8 +83,8 @@ class Architect():
         # update final gradient = dalpha - xi*hessian
         with torch.no_grad():
             for alpha, da, h in zip(self.net.alphas(), dalpha, hessian):
-                noise = self.shape_gaussian[alpha.grad.shape].sample() / len(trn_X)
                 print(noise)
+                noise = self.shape_gaussian[alpha.grad.shape].sample() / len(trn_X)
                 noise = noise.to(alpha.grad.device)
                 alpha.grad = da - xi*h + noise
 
