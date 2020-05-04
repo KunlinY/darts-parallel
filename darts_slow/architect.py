@@ -1,6 +1,7 @@
 """ Architect controls architecture of cell by computing gradients of alphas """
 import copy
 import torch
+import torch.distributions.multivariate_normal as gaussian
 
 
 class Architect():
@@ -15,6 +16,12 @@ class Architect():
         self.v_net = copy.deepcopy(net)
         self.w_momentum = w_momentum
         self.w_weight_decay = w_weight_decay
+
+        shape_gaussian = {}
+        for param in self.net.alphas():
+            shape_gaussian[param.data.shape] = gaussian.MultivariateNormal(
+                torch.zeros(param.data.shape), torch.eye(param.data.shape[-1]))
+        self.shape_gaussian = shape_gaussian
 
     def virtual_step(self, trn_X, trn_y, xi, w_optim):
         """
@@ -73,7 +80,9 @@ class Architect():
         # update final gradient = dalpha - xi*hessian
         with torch.no_grad():
             for alpha, da, h in zip(self.net.alphas(), dalpha, hessian):
-                alpha.grad = da - xi*h
+                noise = self.shape_gaussian[alpha.grad.shape].sample() / len(trn_X)
+                noise = noise.to(alpha.grad.device)
+                alpha.grad = da - xi*h + noise
 
     def compute_hessian(self, dw, trn_X, trn_y):
         """
