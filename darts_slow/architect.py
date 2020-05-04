@@ -56,22 +56,22 @@ class Architect():
             for a, va in zip(self.net.alphas(), self.v_net.alphas()):
                 va.copy_(a)
 
-    def unrolled_backward(self, trn_X, trn_y, val_X, val_y, xi, w_optim):
+    def unrolled_backward(self, trn_X, trn_y, val_X, val_y, xi, w_optim, logger=None):
         """ Compute unrolled loss and backward its gradients
         Args:
             xi: learning rate for virtual gradient step (same as net lr)
             w_optim: weights optimizer - for virtual step
         """
         # do virtual step (calc w`)
-        print("virtual step")
+        logger.info("virtual step")
         self.virtual_step(trn_X, trn_y, xi, w_optim)
 
         # calc unrolled loss
-        print("unrolled loss")
+        logger.info("unrolled loss")
         loss = self.v_net.loss(val_X, val_y) # L_val(w`)
 
         # compute gradient
-        print("compute gradient")
+        logger.info("compute gradient")
         v_alphas = tuple(self.v_net.alphas())
         v_weights = tuple(self.v_net.weights())
         v_grads = torch.autograd.grad(loss, v_alphas + v_weights)
@@ -83,7 +83,7 @@ class Architect():
         # update final gradient = dalpha - xi*hessian
         with torch.no_grad():
             for alpha, da, h in zip(self.net.alphas(), dalpha, hessian):
-                print(noise)
+                logger.info(noise)
                 noise = self.shape_gaussian[alpha.grad.shape].sample() / len(trn_X)
                 noise = noise.to(alpha.grad.device)
                 alpha.grad = da - xi*h + noise
