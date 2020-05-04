@@ -78,15 +78,17 @@ class Architect():
         dalpha = v_grads[:len(v_alphas)]
         dw = v_grads[len(v_alphas):]
 
+        logger.info("compute hessian")
         hessian = self.compute_hessian(dw, trn_X, trn_y)
 
         # update final gradient = dalpha - xi*hessian
         with torch.no_grad():
+            logger.info("no grad")
             for alpha, da, h in zip(self.net.alphas(), dalpha, hessian):
-                logger.info(noise)
-                noise = self.shape_gaussian[alpha.grad.shape].sample() / len(trn_X)
-                noise = noise.to(alpha.grad.device)
-                alpha.grad = da - xi*h + noise
+                # noise = self.shape_gaussian[alpha.grad.shape].sample() / len(trn_X)
+                # logger.info(noise)
+                # noise = noise.to(alpha.grad.device)
+                alpha.grad = da - xi*h #+ noise
 
     def compute_hessian(self, dw, trn_X, trn_y):
         """

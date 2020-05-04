@@ -150,12 +150,12 @@ def train(train_loader, valid_loader, model, architect, w_optim, alpha_optim, lr
         nn.utils.clip_grad_norm_(model.weights(), config.w_grad_clip)
 
         logger.info("noise start")
-        for param in model.parameters():
-            noise = shape_gaussian[param.grad.shape].sample() / config.batch_size
-            noise = noise.to(param.grad.device)
-            param.grad += noise
-
-        logger.info("noise finish")
+        # for param in model.parameters():
+        #     noise = shape_gaussian[param.grad.shape].sample() / config.batch_size
+        #     noise = noise.to(param.grad.device)
+        #     param.grad += noise
+        #
+        # logger.info("noise finish")
 
         w_optim.step()
 
