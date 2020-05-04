@@ -119,6 +119,7 @@ def main():
 
 
 def train(train_loader, valid_loader, model, architect, w_optim, alpha_optim, lr, epoch):
+    logger.info("Enter train")
     top1 = utils.AverageMeter()
     top5 = utils.AverageMeter()
     losses = utils.AverageMeter()
@@ -146,13 +147,13 @@ def train(train_loader, valid_loader, model, architect, w_optim, alpha_optim, lr
         # gradient clipping
         nn.utils.clip_grad_norm_(model.weights(), config.w_grad_clip)
 
-        print("noise start")
+        logger.info("noise start")
         for param in model.parameters():
             noise = shape_gaussian[param.grad.shape].sample() / config.batch_size
             noise = noise.to(param.grad.device)
             param.grad += noise
 
-        print("noise finish")
+        logger.info("noise finish")
 
         w_optim.step()
 
