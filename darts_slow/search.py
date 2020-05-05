@@ -76,9 +76,12 @@ def main():
     architect = Architect(model, config.w_momentum, config.w_weight_decay, noise_add)
 
     if noise_add:
+        logger.info("Adding noise")
         for param in model.parameters():
             shape_gaussian[param.data.shape] = gaussian.MultivariateNormal(
                 torch.zeros(param.data.shape), torch.eye(param.data.shape[-1]))
+    else:
+        logger.info("Not adding noise")
 
     # training loop
     best_top1 = 0.

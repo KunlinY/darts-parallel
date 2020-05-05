@@ -84,9 +84,8 @@ class Architect():
         with torch.no_grad():
             for alpha, da, h in zip(self.net.alphas(), dalpha, hessian):
                 if self.noise_add:
-                    noise = self.shape_gaussian[alpha.grad.shape].sample() / len(trn_X)
-                    logger.info(noise)
-                    noise = noise.to(alpha.grad.device)
+                    noise = self.shape_gaussian[alpha.shape].sample() / len(trn_X)
+                    noise = noise.to(alpha.device)
                     alpha.grad = da - xi * h + noise
                 else:
                     alpha.grad = da - xi * h
