@@ -71,10 +71,10 @@ class SearchConfig(BaseConfig):
         args = parser.parse_args()
         super().__init__(**vars(args))
 
-        self.data_path = './data/'
-        self.path = os.path.join('searchs', self.name)
-        self.plot_path = os.path.join(self.path, 'plots')
         self.gpus = parse_gpus(self.gpus)
+        self.data_path = './data/'
+        self.path = os.path.join('searchs_%d' % len(self.gpus), self.name)
+        self.plot_path = os.path.join(self.path, 'plots')
 
 
 class AugmentConfig(BaseConfig):
@@ -110,7 +110,7 @@ class AugmentConfig(BaseConfig):
         args = parser.parse_args()
         super().__init__(**vars(args))
 
-        self.data_path = './data/'
-        self.path = os.path.join('augments', self.name)
-        self.genotype = gt.from_str(self.genotype)
         self.gpus = parse_gpus(self.gpus)
+        self.data_path = './data/'
+        self.path = os.path.join('augments_%d' % len(self.gpus), self.name)
+        self.genotype = gt.from_str(self.genotype)

@@ -5,7 +5,7 @@ metadata:
     k8s-app: research
   generateName: darts-parallel-ky
   namespace: ecepxie
-  name: darts-parallel-ky
+  name: darts-parallel-kl
 spec:
   template:
     metadata:
