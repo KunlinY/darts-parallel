@@ -6,7 +6,7 @@ import torch.distributions.multivariate_normal as gaussian
 
 class Architect():
     """ Compute gradients of alphas """
-    def __init__(self, net, w_momentum, w_weight_decay):
+    def __init__(self, net, w_momentum, w_weight_decay, noise_add=False):
         """
         Args:
             net
@@ -16,11 +16,14 @@ class Architect():
         self.v_net = copy.deepcopy(net)
         self.w_momentum = w_momentum
         self.w_weight_decay = w_weight_decay
-
+        self.noise_add = noise_add
         shape_gaussian = {}
-        for param in self.net.alphas():
-            shape_gaussian[param.data.shape] = gaussian.MultivariateNormal(
-                torch.zeros(param.data.shape), torch.eye(param.data.shape[-1]))
+
+        if self.noise_add:
+            for param in self.net.alphas():
+                shape_gaussian[param.data.shape] = gaussian.MultivariateNormal(
+                    torch.zeros(param.data.shape), torch.eye(param.data.shape[-1]))
+
         self.shape_gaussian = shape_gaussian
 
     def virtual_step(self, trn_X, trn_y, xi, w_optim):
@@ -63,32 +66,30 @@ class Architect():
             w_optim: weights optimizer - for virtual step
         """
         # do virtual step (calc w`)
-        logger.info("virtual step")
         self.virtual_step(trn_X, trn_y, xi, w_optim)
 
         # calc unrolled loss
-        logger.info("unrolled loss")
         loss = self.v_net.loss(val_X, val_y) # L_val(w`)
 
         # compute gradient
-        logger.info("compute gradient")
         v_alphas = tuple(self.v_net.alphas())
         v_weights = tuple(self.v_net.weights())
         v_grads = torch.autograd.grad(loss, v_alphas + v_weights)
         dalpha = v_grads[:len(v_alphas)]
         dw = v_grads[len(v_alphas):]
 
-        logger.info("compute hessian")
         hessian = self.compute_hessian(dw, trn_X, trn_y)
 
         # update final gradient = dalpha - xi*hessian
         with torch.no_grad():
-            logger.info("no grad")
             for alpha, da, h in zip(self.net.alphas(), dalpha, hessian):
-                # noise = self.shape_gaussian[alpha.grad.shape].sample() / len(trn_X)
-                # logger.info(noise)
-                # noise = noise.to(alpha.grad.device)
-                alpha.grad = da - xi*h #+ noise
+                if self.noise_add:
+                    noise = self.shape_gaussian[alpha.grad.shape].sample() / len(trn_X)
+                    logger.info(noise)
+                    noise = noise.to(alpha.grad.device)
+                    alpha.grad = da - xi * h + noise
+                else:
+                    alpha.grad = da - xi * h
 
     def compute_hessian(self, dw, trn_X, trn_y):
         """

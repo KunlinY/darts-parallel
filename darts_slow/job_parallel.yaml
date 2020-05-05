@@ -21,7 +21,7 @@ spec:
         command: ["/bin/bash","run_darts_parallel.sh"]
         resources:
           requests:
-            memory: "8Gi"
+            memory: "6Gi"
             cpu: "4"
             nvidia.com/gpu: 4
           limits:

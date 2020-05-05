@@ -12,6 +12,7 @@ from architect import Architect
 from visualize import plot
 
 config = SearchConfig()
+noise_add = config.noise
 
 device = torch.device("cuda")
 
@@ -72,11 +73,12 @@ def main():
                                                pin_memory=True)
     lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
         w_optim, config.epochs, eta_min=config.w_lr_min)
-    architect = Architect(model, config.w_momentum, config.w_weight_decay)
+    architect = Architect(model, config.w_momentum, config.w_weight_decay, noise_add)
 
-    for param in model.parameters():
-        shape_gaussian[param.data.shape] = gaussian.MultivariateNormal(
-            torch.zeros(param.data.shape), torch.eye(param.data.shape[-1]))
+    if noise_add:
+        for param in model.parameters():
+            shape_gaussian[param.data.shape] = gaussian.MultivariateNormal(
+                torch.zeros(param.data.shape), torch.eye(param.data.shape[-1]))
 
     # training loop
     best_top1 = 0.
@@ -135,13 +137,10 @@ def train(train_loader, valid_loader, model, architect, w_optim, alpha_optim, lr
 
         # phase 2. architect step (alpha)
         alpha_optim.zero_grad()
-        logger.info("phase 2")
         architect.unrolled_backward(trn_X, trn_y, val_X, val_y, lr, w_optim, logger)
-        logger.info("phase 2")
         alpha_optim.step()
 
         # phase 1. child network step (w)
-        logger.info("phase 1")
         w_optim.zero_grad()
         logits = model(trn_X)
         loss = model.criterion(logits, trn_y)
@@ -149,13 +148,17 @@ def train(train_loader, valid_loader, model, architect, w_optim, alpha_optim, lr
         # gradient clipping
         nn.utils.clip_grad_norm_(model.weights(), config.w_grad_clip)
 
-        logger.info("noise start")
-        # for param in model.parameters():
-        #     noise = shape_gaussian[param.grad.shape].sample() / config.batch_size
-        #     noise = noise.to(param.grad.device)
-        #     param.grad += noise
-        #
-        # logger.info("noise finish")
+        if noise_add:
+            for i, param in enumerate(model.parameters()):
+                if i == 0:
+                    logger.info(param.grad.cpu().numpy())
+
+                noise = shape_gaussian[param.grad.shape].sample() / config.batch_size
+                noise = noise.to(param.grad.device)
+                param.grad += noise
+
+                if i == 0:
+                    logger.info(param.grad.cpu().numpy())
 
         w_optim.step()
 

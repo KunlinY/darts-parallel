@@ -3,4 +3,4 @@ git pull
 apt-get update
 apt-get --assume-yes install graphviz
 pip install graphviz pydot
-cd cnn && python train_search.py --gpu 0,1
+python search.py --name cifar10 --dataset cifar10 --noise True
