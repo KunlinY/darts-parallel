@@ -56,15 +56,9 @@ def train(train_loader, valid_loader, model, architect, w_optim, alpha_optim, lr
 
         if noise_add:
             for i, param in enumerate(model.parameters()):
-                if i == 0:
-                    logger.info(param.grad.cpu().numpy())
-
                 noise = shape_gaussian[param.grad.shape].sample() / config.batch_size
                 noise = noise.to(param.grad.device)
                 param.grad += noise
-
-                if i == 0:
-                    logger.info(param.grad.cpu().numpy())
 
         w_optim.step()
 

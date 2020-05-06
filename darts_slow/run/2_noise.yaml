@@ -3,9 +3,9 @@ kind: Job # Deployment will automatically restart when killed. Use Pod if not ne
 metadata:
   labels:
     k8s-app: research
-  generateName: darts-noise-kl
+  generateName: darts-parallel-noise-kl
   namespace: ecepxie
-  name: darts-noise-kl
+  name: darts-parallel-noise-kl
 spec:
   template:
     metadata:
@@ -18,25 +18,28 @@ spec:
         image: gitlab-registry.nautilus.optiputer.net/vamsirk/research-containers
         imagePullPolicy: Always
         workingDir: /ceph/darts-parallel/darts_slow
-        command: ["/bin/bash","run_darts.sh"]
+        command: ["/bin/bash","run_darts.sh 128 16 True"]
         resources:
           requests:
             memory: "6Gi"
-            cpu: "2"
-            nvidia.com/gpu: 1
+            cpu: "4"
+            nvidia.com/gpu: 2
           limits:
             memory: "8Gi"
-            cpu: "4"
-            nvidia.com/gpu: 1
+            cpu: "6"
+            nvidia.com/gpu: 2
         volumeMounts:
-#        - mountPath: /dev/shm
-#          name: dshm
+        - mountPath: /dev/shm
+          name: dshm
         - mountPath: /ceph
           name: kunlin-volume
-#      volumes:
-#      - name: dshm
-#        emptyDir:
-#          medium: Memory
+      volumes:
+      - name: dshm
+        emptyDir:
+          medium: Memory
+      - name: kunlin-volume
+        persistentVolumeClaim:
+          claimName: kunlin-volume
 #      - name: ceph
 #        flexVolume:
 #          driver: ceph.rook.io/rook
@@ -47,10 +50,6 @@ spec:
 #            path: /ecepxie
 #            mountUser: ecepxie
 #            mountSecret: ceph-fs-secret
-      volumes:
-        - name: kunlin-volume
-          persistentVolumeClaim:
-            claimName: kunlin-volume
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

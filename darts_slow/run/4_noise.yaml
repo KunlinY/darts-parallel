@@ -1,0 +1,61 @@
+apiVersion: batch/v1
+kind: Job # Deployment will automatically restart when killed. Use Pod if not needed
+metadata:
+  labels:
+    k8s-app: research
+  generateName: darts-parallel-noise-big-kl
+  namespace: ecepxie
+  name: darts-parallel-noise-big-kl
+spec:
+  template:
+    metadata:
+      labels:
+        k8s-app: research
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: research
+        image: gitlab-registry.nautilus.optiputer.net/vamsirk/research-containers
+        imagePullPolicy: Always
+        workingDir: /ceph/darts-parallel/darts_slow
+        command: ["/bin/bash","run_darts.sh 256 16 True"]
+        resources:
+          requests:
+            memory: "8Gi"
+            cpu: "6"
+            nvidia.com/gpu: 4
+          limits:
+            memory: "10Gi"
+            cpu: "8"
+            nvidia.com/gpu: 4
+        volumeMounts:
+        - mountPath: /dev/shm
+          name: dshm
+        - mountPath: /ceph
+          name: kunlin-volume
+      volumes:
+      - name: dshm
+        emptyDir:
+          medium: Memory
+      - name: kunlin-volume
+        persistentVolumeClaim:
+          claimName: kunlin-volume
+#      - name: ceph
+#        flexVolume:
+#          driver: ceph.rook.io/rook
+#          fsType: ceph
+#          options:
+#            clusterNamespace: rook
+#            fsName: nautilusfs
+#            path: /ecepxie
+#            mountUser: ecepxie
+#            mountSecret: ceph-fs-secret
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: gpu-type
+                operator: In # Use NotIn for other types
+                values:
+                - 1080Ti
