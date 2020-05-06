@@ -18,7 +18,8 @@ spec:
         image: gitlab-registry.nautilus.optiputer.net/vamsirk/research-containers
         imagePullPolicy: Always
         workingDir: /ceph/darts-parallel/darts_slow
-        command: ["/bin/bash","run_darts.sh 128 16 False"]
+        command: ["/bin/bash","run_darts.sh"]
+        args: ["128", "16", "False"]
         resources:
           requests:
             memory: "6Gi"

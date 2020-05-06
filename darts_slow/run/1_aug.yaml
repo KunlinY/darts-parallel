@@ -18,8 +18,8 @@ spec:
         image: gitlab-registry.nautilus.optiputer.net/vamsirk/research-containers
         imagePullPolicy: Always
         workingDir: /ceph/darts-parallel/darts_slow
-        command: ["/bin/bash","run_darts.sh"]
-        args: ["64", "0", "False"]
+        command: ["python","augment.py"]
+        args: ["64", "4", "Genotype(normal=[[('sep_conv_3x3', 0), ('sep_conv_5x5', 1)], [('sep_conv_3x3', 0), ('dil_conv_3x3', 2)], [('dil_conv_3x3', 0), ('sep_conv_3x3', 1)], [('dil_conv_3x3', 0), ('dil_conv_3x3', 1)]], normal_concat=range(2, 6), reduce=[[('skip_connect', 0), ('sep_conv_3x3', 1)], [('skip_connect', 2), ('max_pool_3x3', 1)], [('skip_connect', 2), ('avg_pool_3x3', 1)], [('skip_connect', 2), ('avg_pool_3x3', 0)]], reduce_concat=range(2, 6))"]
         resources:
           requests:
             memory: "6Gi"
