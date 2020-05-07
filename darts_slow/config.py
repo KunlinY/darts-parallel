@@ -76,7 +76,7 @@ class SearchConfig(BaseConfig):
         self.w_lr = len(self.gpus) * self.w_lr
         self.w_lr_min = len(self.gpus) * self.w_lr_min
         self.alpha_lr = len(self.gpus) * self.alpha_lr
-        self.workers = len(self.gpus) * self.workers
+        # self.workers = len(self.gpus) * self.workers
         self.data_path = './data/'
         self.path = os.path.join('searchs_fl_%d_%s' % (len(self.gpus), self.noise), self.name)
         self.plot_path = os.path.join(self.path, 'plots')

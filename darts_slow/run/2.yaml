@@ -3,9 +3,9 @@ kind: Job # Deployment will automatically restart when killed. Use Pod if not ne
 metadata:
   labels:
     k8s-app: research
-  generateName: darts-parallel-noise-kl
+  generateName: darts-parallel-kl
   namespace: ecepxie
-  name: darts-parallel-noise-kl
+  name: darts-parallel-kl
 spec:
   template:
     metadata:

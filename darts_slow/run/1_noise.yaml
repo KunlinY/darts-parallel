@@ -19,7 +19,7 @@ spec:
         imagePullPolicy: Always
         workingDir: /ceph/darts-parallel/darts_slow
         command: ["/bin/bash", "run_darts_noise.sh"]
-        args: []
+        args: ["2"]
         resources:
           requests:
             memory: "6Gi"
