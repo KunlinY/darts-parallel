@@ -19,7 +19,7 @@ spec:
         imagePullPolicy: Always
         workingDir: /ceph/darts-parallel/darts_slow
         command: ["/bin/bash","run_darts.sh"]
-        args: []
+        args: ["16"]
         resources:
           requests:
             memory: "8Gi"
