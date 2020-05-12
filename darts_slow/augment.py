@@ -42,7 +42,12 @@ def main():
     use_aux = config.aux_weight > 0.
     model = AugmentCNN(input_size, input_channels, config.init_channels, n_classes, config.layers,
                        use_aux, config.genotype)
-    model = nn.DataParallel(model, device_ids=config.gpus).to(device)
+
+    filename = os.path.join(config.path, 'checkpoint.pth.tar')
+    if os.path.exists(filename):
+        model = torch.load(filename).to(device)
+    else:
+        model = nn.DataParallel(model, device_ids=config.gpus).to(device)
 
     # model size
     mb_params = utils.param_size(model)
