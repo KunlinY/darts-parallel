@@ -20,6 +20,9 @@ spec:
       containers:
       - name: research
         image: gitlab-registry.nautilus.optiputer.net/vamsirk/research-containers
+        securityContext:
+          privileged: true
+          allowPrivilegeEscalation: true
         imagePullPolicy: Always
         workingDir: /ceph/darts-parallel/ps
         command: ["/bin/bash"]
