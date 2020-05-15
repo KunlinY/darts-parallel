@@ -3,9 +3,9 @@ kind: Job # Deployment will automatically restart when killed. Use Pod if not ne
 metadata:
   labels:
     k8s-app: research
-  generateName: darts-kl
+  generateName: trainer-kl
   namespace: ecepxie
-  name: darts-kl
+  name: trainer-kl
 spec:
   template:
     metadata:
@@ -17,7 +17,7 @@ spec:
       - name: research
         image: gitlab-registry.nautilus.optiputer.net/vamsirk/research-containers
         imagePullPolicy: Always
-        workingDir: /ceph/darts-parallel/darts_slow
+        workingDir: /ceph/darts-parallel/ps
         command: ["/bin/bash","run_trainer.sh"]
         args: ["2", "1"]
         resources:
