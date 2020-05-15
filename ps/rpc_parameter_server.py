@@ -38,6 +38,7 @@ class Net(nn.Module):
         self.fc2 = nn.Linear(128, 10).to(device)
 
     def forward(self, x):
+        print("forwarding net")
         x = self.conv1(x)
         x = F.relu(x)
         x = self.conv2(x)
@@ -89,6 +90,7 @@ class ParameterServer(nn.Module):
             "cuda:0" if torch.cuda.is_available() and num_gpus > 0 else "cpu")
 
     def forward(self, inp):
+        print("forwarding ps")
         inp = inp.to(self.input_device)
         out = self.model(inp)
         # This output is forwarded over RPC, which as of 1.5.0 only accepts CPU tensors.
@@ -161,6 +163,7 @@ class TrainerNet(nn.Module):
         return remote_params
 
     def forward(self, x):
+        print("forwarding trainer net")
         model_output = remote_method(
             ParameterServer.forward, self.param_server_rref, x)
         return model_output

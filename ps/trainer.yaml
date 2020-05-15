@@ -18,8 +18,10 @@ spec:
         image: gitlab-registry.nautilus.optiputer.net/vamsirk/research-containers
         imagePullPolicy: Always
         workingDir: /ceph/darts-parallel/ps
-        command: ["/bin/bash","run_trainer.sh"]
-        args: ["2", "1"]
+        command: ["/bin/bash"]
+        args: ["-c", "sleep infinity"]
+#        command: ["/bin/bash","run_trainer.sh"]
+#        args: ["2", "1"]
         resources:
           requests:
             memory: "6Gi"
