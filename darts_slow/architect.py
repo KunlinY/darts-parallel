@@ -13,7 +13,7 @@ class Architect():
             w_momentum: weights momentum
         """
         self.net = net
-        self.v_net = copy.deepcopy(net)
+        self.v_net = copy.deepcopy(net.to_here())
         self.w_momentum = w_momentum
         self.w_weight_decay = w_weight_decay
         self.noise_add = noise_add
