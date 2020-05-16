@@ -400,6 +400,6 @@ if __name__ == "__main__":
         p.start()
         p.join()
 
-    p = mp.Process(target=run_worker)
-    p.start()
-    p.join()
+    pp = mp.Process(target=run_worker)
+    pp.start()
+    pp.join()
