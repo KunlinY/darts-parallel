@@ -63,6 +63,35 @@ class SearchConfig(BaseConfig):
         parser.add_argument('--alpha_weight_decay', type=float, default=1e-3,
                             help='weight decay for alpha')
         parser.add_argument('--noise', type=bool, default=False, help='add noise or not')
+        parser.add_argument(
+            "--world_size",
+            type=int,
+            default=4,
+            help="""Total number of participating processes. Should be the sum of
+                master node and all training nodes.""")
+        parser.add_argument(
+            "--rank",
+            type=int,
+            default=None,
+            help="Global rank of this process. Pass in 0 for master.")
+        parser.add_argument(
+            "--num_gpus",
+            type=int,
+            default=0,
+            help="""Number of GPUs to use for training, Currently supports between 0
+                 and 2 GPUs. Note that this argument will be passed to the parameter servers.""")
+        parser.add_argument(
+            "--master_addr",
+            type=str,
+            default="server-kl",
+            help="""Address of master, will default to localhost if not provided.
+                Master must be able to accept network traffic on the address + port.""")
+        parser.add_argument(
+            "--master_port",
+            type=str,
+            default="80",
+            help="""Port that master is listening on, will default to 29500 if not
+                provided. Master must be able to accept network traffic on the host and port.""")
 
         return parser
 
@@ -72,13 +101,13 @@ class SearchConfig(BaseConfig):
         super().__init__(**vars(args))
 
         self.gpus = parse_gpus(self.gpus)
-        self.batch_size = len(self.gpus) * self.batch_size
-        self.w_lr = len(self.gpus) * self.w_lr
-        self.w_lr_min = len(self.gpus) * self.w_lr_min
-        self.alpha_lr = len(self.gpus) * self.alpha_lr
+        self.batch_size = self.world_size * self.batch_size
+        self.w_lr = self.world_size * self.w_lr
+        self.w_lr_min = self.world_size * self.w_lr_min
+        self.alpha_lr = self.world_size * self.alpha_lr
         # self.workers = len(self.gpus) * self.workers
         self.data_path = './data/'
-        self.path = os.path.join('searchs_fl_%d_%s' % (len(self.gpus), self.noise), self.name)
+        self.path = os.path.join('searchs_fl_%d_%d_%s' % (self.world_size, self.rank, self.noise), self.name)
         self.plot_path = os.path.join(self.path, 'plots')
 
 
