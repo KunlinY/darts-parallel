@@ -340,7 +340,7 @@ def run_worker():
     #     w_optim, config.epochs, eta_min=config.w_lr_min)
     lrs_rrefs = []
     for opt_rref in w_optim.remote_optimizers:
-        lrs_rrefs = rpc.remote(opt_rref.owner(), create_lr_scheduler, args=(opt_rref,))
+        lrs_rrefs.append(rpc.remote(opt_rref.owner(), create_lr_scheduler, args=(opt_rref,)))
 
     v_model = SearchCNNController(input_channels, config.init_channels, n_classes, config.layers,
                                   nn.CrossEntropyLoss().to(device), device_ids=config.gpus).to(device)
