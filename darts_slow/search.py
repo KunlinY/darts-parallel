@@ -278,6 +278,10 @@ def validate(valid_loader, model, epoch, cur_step):
 
 
 def run_worker():
+    rpc.init_rpc(
+        name=f"trainer_{config.rank}",
+        rank=config.rank,
+        world_size=config.world_size)
     logger.info("Logger is set - training start")
 
     # set default gpu device id
@@ -393,6 +397,7 @@ def run_worker():
 
     logger.info("Final best Prec@1 = {:.4%}".format(best_top1))
     logger.info("Best Genotype = {}".format(best_genotype))
+    rpc.shutdown()
 
 
 if __name__ == "__main__":
