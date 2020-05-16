@@ -43,7 +43,8 @@ def remote_method(method, rref, *args, **kwargs):
 
 input_size, input_channels, n_classes, train_data = utils.get_data(
         config.dataset, config.data_path, cutout_length=0, validation=False)
-# net_crit = nn.CrossEntropyLoss().to(device)
+os.environ['MASTER_ADDR'] = config.master_addr
+os.environ["MASTER_PORT"] = config.master_port
 
 
 # --------- Parameter Server --------------------
@@ -51,7 +52,7 @@ class ParameterServer(nn.Module):
     def __init__(self):
         super().__init__()
         self.model = SearchCNNController(input_channels, config.init_channels, n_classes, config.layers,
-                                         net_crit, device_ids=config.gpus).to(device)
+                                         nn.CrossEntropyLoss().to(device), device_ids=config.gpus).to(device)
         self.input_device = torch.device(
             "cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -151,7 +152,7 @@ class TrainerNet(nn.Module):
 
     def loss(self, X, y):
         logits = self.forward(X)
-        return net_crit(logits, y)
+        return self.criterion(logits, y)
 
     def genotype(self):
         remote_params = remote_method(
