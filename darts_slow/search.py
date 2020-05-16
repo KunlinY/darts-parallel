@@ -395,11 +395,12 @@ def run_worker():
 
 
 if __name__ == "__main__":
+    mp.set_start_method('spawn')
     if config.rank == 0:
         p = mp.Process(target=run_parameter_server, args=(0, config.world_size))
         p.start()
         p.join()
 
-    pp = mp.Process(target=run_worker)
-    pp.start()
-    pp.join()
+    p = mp.Process(target=run_worker)
+    p.start()
+    p.join()
