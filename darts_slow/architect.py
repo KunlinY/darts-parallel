@@ -6,14 +6,15 @@ import torch.distributions.multivariate_normal as gaussian
 
 class Architect():
     """ Compute gradients of alphas """
-    def __init__(self, net, w_momentum, w_weight_decay, noise_add=False):
+    def __init__(self, net, v_net, w_momentum, w_weight_decay, noise_add=False):
         """
         Args:
             net
             w_momentum: weights momentum
         """
         self.net = net
-        self.v_net = copy.deepcopy(net.to_here())
+        # self.v_net = copy.deepcopy(net)
+        self.v_net = v_net
         self.w_momentum = w_momentum
         self.w_weight_decay = w_weight_decay
         self.noise_add = noise_add

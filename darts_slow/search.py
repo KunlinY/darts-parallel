@@ -342,7 +342,9 @@ def run_worker():
     for opt_rref in w_optim.remote_optimizers:
         lrs_rrefs = rpc.remote(opt_rref.owner(), create_lr_scheduler, args=(opt_rref,))
 
-    architect = Architect(model, config.w_momentum, config.w_weight_decay, noise_add)
+    v_model = SearchCNNController(input_channels, config.init_channels, n_classes, config.layers,
+                                  nn.CrossEntropyLoss().to(device), device_ids=config.gpus).to(device)
+    architect = Architect(model, v_model, config.w_momentum, config.w_weight_decay, noise_add)
 
     if noise_add:
         logger.info("Adding noise")
