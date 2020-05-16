@@ -276,12 +276,7 @@ def validate(valid_loader, model, epoch, cur_step):
     return top1.avg
 
 
-if __name__ == "__main__":
-    if config.rank == 0:
-        p = mp.Process(target=run_parameter_server, args=(0, config.world_size))
-        p.start()
-        p.join()
-
+def run_worker():
     logger.info("Logger is set - training start")
 
     # set default gpu device id
@@ -322,9 +317,9 @@ if __name__ == "__main__":
     rank = config.rank
     indices = list(range(n_train))
     train_sampler = torch.utils.data.sampler.SubsetRandomSampler(
-        indices[int(rank*split/world):int((rank+1)*split/world)])
+        indices[int(rank * split / world):int((rank + 1) * split / world)])
     valid_sampler = torch.utils.data.sampler.SubsetRandomSampler(
-        indices[split+int(rank*(n_train-split)/world):split+int(int((rank+1)*(n_train-split)/world))])
+        indices[split + int(rank * (n_train - split) / world):split + int(int((rank + 1) * (n_train - split) / world))])
     train_loader = torch.utils.data.DataLoader(train_data,
                                                batch_size=config.batch_size,
                                                sampler=train_sampler,
@@ -397,3 +392,14 @@ if __name__ == "__main__":
 
     logger.info("Final best Prec@1 = {:.4%}".format(best_top1))
     logger.info("Best Genotype = {}".format(best_genotype))
+
+
+if __name__ == "__main__":
+    if config.rank == 0:
+        p = mp.Process(target=run_parameter_server, args=(0, config.world_size))
+        p.start()
+        p.join()
+
+    p = mp.Process(target=run_worker)
+    p.start()
+    p.join()
