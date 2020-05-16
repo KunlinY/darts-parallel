@@ -277,6 +277,11 @@ def validate(valid_loader, model, epoch, cur_step):
 
 
 if __name__ == "__main__":
+    if config.rank == 0:
+        p = mp.Process(target=run_parameter_server, args=(0, config.world_size))
+        p.start()
+        p.join()
+
     logger.info("Logger is set - training start")
 
     # set default gpu device id
