@@ -20,7 +20,7 @@ hook = sy.TorchHook(torch)
 
 config = SearchConfig()
 
-device = torch.device("cuda")
+default_device = torch.device("cuda:0")
 
 # tensorboard
 writer = SummaryWriter(log_dir=os.path.join(config.path, "tb"))
@@ -59,10 +59,10 @@ async def main():
     input_size, input_channels, n_classes, train_data = utils.get_data(
         config.dataset, config.data_path, cutout_length=0, validation=False)
 
-    net_crit = nn.CrossEntropyLoss().to(device)
+    net_crit = nn.CrossEntropyLoss().to(default_device)
     model = SearchCNNController(input_channels, config.init_channels, n_classes, config.layers,
                                 net_crit, device_ids=config.gpus)
-    model = model.to(device)
+    model = model.to(default_device)
 
     # weights optimizer
     w_optim = torch.optim.SGD(model.weights(), config.w_lr, momentum=config.w_momentum,
@@ -147,6 +147,8 @@ async def main():
 
 
 def update(step, wid, model, alpha_optim, w_optim, architect, lr):
+    device = torch.device('cuda:' + str(wid))
+
     trn_X, trn_y = remote_train_data[wid][step]
     trn_X, trn_y = trn_X.to(device, non_blocking=True), trn_y.to(device, non_blocking=True)
     val_X, val_y = remote_valid_data[wid][step]
@@ -154,6 +156,7 @@ def update(step, wid, model, alpha_optim, w_optim, architect, lr):
     N = trn_X.size(0)
 
     model.send(trn_X.location)
+    model.to(device)
 
     # phase 2. architect step (alpha)
     alpha_optim.zero_grad()
@@ -227,7 +230,7 @@ def validate(valid_loader, model, epoch, cur_step):
 
     with torch.no_grad():
         for step, (X, y) in enumerate(valid_loader):
-            X, y = X.to(device, non_blocking=True), y.to(device, non_blocking=True)
+            X, y = X.to(default_device, non_blocking=True), y.to(default_device, non_blocking=True)
             N = X.size(0)
 
             logits = model(X)
