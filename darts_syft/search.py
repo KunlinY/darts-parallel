@@ -45,14 +45,6 @@ remote_valid_data = ([], [])
 async def main():
     logger.info("Logger is set - training start")
 
-    kwargs_websocket = {"hook": hook, "host": "0.0.0.0"}
-    alice = WebsocketClientWorker(id="alice", port=8777, **kwargs_websocket)
-    bob = WebsocketClientWorker(id="bob", port=8778, **kwargs_websocket)
-    workers = [alice, bob]
-
-    for wcw in workers:
-        wcw.clear_objects_remote()
-
     # set default gpu device id
     torch.cuda.set_device(config.gpus[0])
 
