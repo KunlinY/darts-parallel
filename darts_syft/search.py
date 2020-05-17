@@ -36,7 +36,7 @@ workers = [alice, bob]
 
 for wcw in workers:
     wcw.clear_objects_remote()
-    hook.local_worker.add_worker(wcw)
+    # hook.local_worker.add_worker(wcw)
 
 remote_train_data = ([], [])
 remote_valid_data = ([], [])
