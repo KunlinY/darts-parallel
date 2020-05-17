@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: Job # Deployment will automatically restart when killed. Use Pod if not needed
+metadata:
+  labels:
+    k8s-app: research
+  generateName: trainer-kl
+  namespace: ecepxie
+  name: trainer-kl
+spec:
+  template:
+    metadata:
+      labels:
+        k8s-app: research
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: research
+        image: gitlab-registry.nautilus.optiputer.net/vamsirk/research-containers
+        imagePullPolicy: Always
+        workingDir: /ceph/darts-parallel/ps
+        command: ["/bin/bash"]
+        args: ["-c", "sleep infinity"]
+#        command: ["/bin/bash","run_trainer.sh"]
+#        args: ["2", "1"]
+        resources:
+          requests:
+            memory: "6Gi"
+            cpu: "4"
+            nvidia.com/gpu: 2
+          limits:
+            memory: "20Gi"
+            cpu: "8"
+            nvidia.com/gpu: 2
+        volumeMounts:
+        - mountPath: /ceph
+          name: kunlin-volume
+      volumes:
+        - name: kunlin-volume
+          persistentVolumeClaim:
+            claimName: kunlin-volume
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: gpu-type
+                operator: In # Use NotIn for other types
+                values:
+                - 1080Ti
