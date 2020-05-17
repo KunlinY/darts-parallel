@@ -20,7 +20,7 @@ hook = sy.TorchHook(torch)
 
 config = SearchConfig()
 
-device = torch.device("cuda")
+device = torch.device("cpu")
 
 # tensorboard
 writer = SummaryWriter(log_dir=os.path.join(config.path, "tb"))
@@ -30,12 +30,13 @@ logger = utils.get_logger(os.path.join(config.path, "{}.log".format(config.name)
 config.print_params(logger.info)
 
 kwargs_websocket = {"hook": hook, "host": "0.0.0.0"}
-alice = WebsocketClientWorker(id="alice", port=8777, **kwargs_websocket)
-bob = WebsocketClientWorker(id="bob", port=8778, **kwargs_websocket)
+alice = WebsocketClientWorker(id="0", port=8777, **kwargs_websocket)
+bob = WebsocketClientWorker(id="1", port=8778, **kwargs_websocket)
 workers = [alice, bob]
 
 for wcw in workers:
     wcw.clear_objects_remote()
+    hook.local_worker.add_worker(wcw)
 
 remote_train_data = ([], [])
 remote_valid_data = ([], [])
