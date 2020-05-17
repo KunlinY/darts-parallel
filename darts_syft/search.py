@@ -42,7 +42,7 @@ remote_train_data = ([], [])
 remote_valid_data = ([], [])
 
 
-def main():
+async def main():
     logger.info("Logger is set - training start")
 
     kwargs_websocket = {"hook": hook, "host": "0.0.0.0"}
@@ -261,4 +261,4 @@ def validate(valid_loader, model, epoch, cur_step):
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.get_event_loop().run_until_complete(main())
