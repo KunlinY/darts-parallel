@@ -104,7 +104,7 @@ if __name__ == "__main__":
 
     # Hook and start server
     hook = sy.TorchHook(torch)
-    server = WebsocketServerWorker(id=args.id, host=args.host, port=args.port, hook=args.hook, verbose=args.verbose)
+    server = WebsocketServerWorker(id=args.id, host=args.host, port=args.port, hook=hook, verbose=args.verbose)
     server.start()
 
     # server = start_websocket_server_worker(
