@@ -20,7 +20,7 @@ hook = sy.TorchHook(torch)
 
 config = SearchConfig()
 
-device = torch.device("cpu")
+device = torch.device("cuda")
 
 # tensorboard
 writer = SummaryWriter(log_dir=os.path.join(config.path, "tb"))
@@ -100,6 +100,8 @@ async def main():
         target = target.send(workers[wid])
         remote_valid_data[wid].append((data, target))
 
+    print("finish sampler")
+
     lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
         w_optim, config.epochs, eta_min=config.w_lr_min)
     architect = Architect(model, config.w_momentum, config.w_weight_decay)
@@ -113,7 +115,7 @@ async def main():
         model.print_alphas(logger)
 
         # training
-        train(train_loader, valid_loader, model, architect, w_optim, alpha_optim, lr, epoch)
+        await train(train_loader, valid_loader, model, architect, w_optim, alpha_optim, lr, epoch)
 
         # validation
         cur_step = (epoch+1) * len(train_loader)
