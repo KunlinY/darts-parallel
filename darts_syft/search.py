@@ -180,7 +180,7 @@ def update(step, wid, model, alpha_optim, w_optim, architect, lr):
     return wid, model, loss, prec1, prec5, N
 
 
-def train(train_loader, valid_loader, model, architect, w_optim, alpha_optim, lr, epoch):
+async def train(train_loader, valid_loader, model, architect, w_optim, alpha_optim, lr, epoch):
     top1 = utils.AverageMeter()
     top5 = utils.AverageMeter()
     losses = utils.AverageMeter()
