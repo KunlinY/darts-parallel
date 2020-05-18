@@ -109,23 +109,24 @@ class SearchCNNController(nn.Module):
         weights_normal = [F.softmax(alpha, dim=-1) for alpha in self.alpha_normal]
         weights_reduce = [F.softmax(alpha, dim=-1) for alpha in self.alpha_reduce]
 
-        if len(self.device_ids) == 1:
-            return self.net(x, weights_normal, weights_reduce)
+        return self.net(x, weights_normal, weights_reduce)
 
-        # scatter x
-        xs = nn.parallel.scatter(x, self.device_ids)
-        # broadcast weights
-        wnormal_copies = broadcast_list(weights_normal, self.device_ids)
-        wreduce_copies = broadcast_list(weights_reduce, self.device_ids)
-
-        # replicate modules
-        replicas = nn.parallel.replicate(self.net, self.device_ids)
-        outputs = nn.parallel.parallel_apply(replicas,
-                                             list(zip(xs, wnormal_copies, wreduce_copies)),
-                                             devices=self.device_ids)
-        return nn.parallel.gather(outputs, self.device_ids[0])
+        # # scatter x
+        # xs = nn.parallel.scatter(x, self.device_ids)
+        # # broadcast weights
+        # wnormal_copies = broadcast_list(weights_normal, self.device_ids)
+        # wreduce_copies = broadcast_list(weights_reduce, self.device_ids)
+        #
+        # # replicate modules
+        # replicas = nn.parallel.replicate(self.net, self.device_ids)
+        # outputs = nn.parallel.parallel_apply(replicas,
+        #                                      list(zip(xs, wnormal_copies, wreduce_copies)),
+        #                                      devices=self.device_ids)
+        # return nn.parallel.gather(outputs, self.device_ids[0])
 
     def loss(self, X, y):
+        print("loss X", X.device)
+        print("loss alpha", self.alpha_normal.device)
         logits = self.forward(X)
         return self.criterion(logits, y)
 
