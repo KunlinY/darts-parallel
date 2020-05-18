@@ -45,6 +45,7 @@ class Architect():
             # dict key is not the value, but the pointer. So original network weight have to
             # be iterated also.
             for w, vw, g in zip(self.net.weights(), self.v_net.weights(), gradients):
+                print(w, vw, g)
                 m = w_optim.state[w].get('momentum_buffer', 0.) * self.w_momentum
                 vw.copy_(w - xi * (m + g.send(trn_X.location) + self.w_weight_decay*w))
 
