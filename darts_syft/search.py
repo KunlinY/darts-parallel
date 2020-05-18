@@ -141,7 +141,6 @@ async def main():
         else:
             is_best = False
         utils.save_checkpoint(model, config.path, is_best)
-        print("")
 
     logger.info("Final best Prec@1 = {:.4%}".format(best_top1))
     logger.info("Best Genotype = {}".format(best_genotype))
@@ -156,12 +155,7 @@ def update(step, wid, model, alpha_optim, w_optim, architect, lr):
     val_X, val_y = val_X.to(device, non_blocking=True), val_y.to(device, non_blocking=True)
     N = trn_X.size(0)
 
-    print(next(model.parameters()).device, device)
-    print("to", model.alpha_normal[0].device)
     model = model.to(device).copy().send(trn_X.location)
-    print(next(model.parameters()).device, device)
-    print("trn_X", trn_X.device)
-    print("to", model.alpha_normal[0].device)
 
     # phase 2. architect step (alpha)
     alpha_optim.zero_grad()
