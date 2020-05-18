@@ -45,9 +45,9 @@ class SearchCell(nn.Module):
         s1 = self.preproc1(s1)
 
         states = [s0.copy().get(), s1.copy().get()]
-        w_dag = w_dag.copy().get()
-        dag = self.dag.copy().get()
-        for edges, w_list in zip(dag, w_dag):
+        for edges, w_list in zip(self.dag, w_dag):
+            w_list = w_list.copy().get()
+            edges = edges.copy().get()
             s_cur = sum(edges[i](s, w) for i, (s, w) in enumerate(zip(states, w_list)))
             states.append(s_cur)
 
