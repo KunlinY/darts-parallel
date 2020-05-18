@@ -34,7 +34,7 @@ class Architect():
         loss = self.net.loss(trn_X, trn_y) # L_trn(w)
 
         # compute gradient
-        gradients = torch.autograd.grad(loss, self.net.weights())
+        gradients = torch.autograd.grad(loss.get(), self.net.weights().copy().get()).send(trn_X.location)
 
         # do virtual step (update gradient)
         # below operations do not need gradient tracking
