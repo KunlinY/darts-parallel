@@ -36,7 +36,7 @@ class Architect():
         # compute gradient
         print(loss)
         weights = [w.copy().get() for w in self.net.weights()]
-        gradients = torch.autograd.grad(loss.get(), weights)
+        gradients = torch.autograd.grad(loss.get(), weights, allow_unused=True)
         # gradients = torch.autograd.grad(loss, self.net.weights())
 
         # do virtual step (update gradient)
