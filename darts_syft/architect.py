@@ -35,15 +35,16 @@ class Architect():
 
         # compute gradient
         print(loss)
-        print(list(self.net.weights()))
-        gradients = torch.autograd.grad(loss, self.net.weights())
+        weights = [w.copy().get() for w in self.net.weights()]
+        gradients = torch.autograd.grad(loss, weights)
+        # gradients = torch.autograd.grad(loss, self.net.weights())
 
         # do virtual step (update gradient)
         # below operations do not need gradient tracking
         with torch.no_grad():
             # dict key is not the value, but the pointer. So original network weight have to
             # be iterated also.
-            for w, vw, g in zip(self.net.weights(), self.v_net.weights(), gradients):
+            for w, vw, g in zip(weights, self.v_net.weights(), gradients):
                 m = w_optim.state[w].get('momentum_buffer', 0.) * self.w_momentum
                 vw.copy_(w - xi * (m + g + self.w_weight_decay*w))
 
