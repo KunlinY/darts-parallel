@@ -31,17 +31,9 @@ class Architect():
             w_optim: weights optimizer
         """
         # forward & calc loss
-        net = self.net.copy().get()
-        loss = net.loss(trn_X.copy().get(), trn_y.copy().get())
-        # loss = self.net.loss(trn_X, trn_y) # L_trn(w)
+        loss = self.net.loss(trn_X, trn_y) # L_trn(w)
 
-        # compute gradient
-        print(loss)
-        # weights = [w.copy().get() for w in self.net.weights()]
-        gradients = torch.autograd.grad(loss, net.weights())
-        print(gradients)
-        gradients.send(trn_X.location)
-        # gradients = torch.autograd.grad(loss, self.net.weights())
+        gradients = torch.autograd.grad(loss, self.net.weights())
 
         # do virtual step (update gradient)
         # below operations do not need gradient tracking
