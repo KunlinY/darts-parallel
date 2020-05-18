@@ -126,7 +126,7 @@ class SearchCNNController(nn.Module):
         return nn.parallel.gather(outputs, self.device_ids[0])
 
     def loss(self, X, y):
-        print("loss", self._parameters)
+        print('loss', next(self.parameters()).device)
         logits = self.forward(X)
         return self.criterion(logits, y)
 
