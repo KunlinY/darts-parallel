@@ -109,8 +109,8 @@ class SearchCNNController(nn.Module):
         weights_normal = [F.softmax(alpha, dim=-1) for alpha in self.alpha_normal]
         weights_reduce = [F.softmax(alpha, dim=-1) for alpha in self.alpha_reduce]
 
-        if len(self.device_ids) == 1:
-            return self.net(x, weights_normal, weights_reduce)
+        # if len(self.device_ids) == 1:
+        return self.net(x, weights_normal, weights_reduce)
 
         # scatter x
         xs = nn.parallel.scatter(x, self.device_ids)
