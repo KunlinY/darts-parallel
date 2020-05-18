@@ -63,6 +63,7 @@ async def main():
     model = SearchCNNController(input_channels, config.init_channels, n_classes, config.layers,
                                 net_crit, device_ids=config.gpus)
     model = model.to(default_device)
+    print(model._parameters)
 
     # weights optimizer
     w_optim = torch.optim.SGD(model.weights(), config.w_lr, momentum=config.w_momentum,
@@ -155,9 +156,9 @@ def update(step, wid, model, alpha_optim, w_optim, architect, lr):
     val_X, val_y = val_X.to(device, non_blocking=True), val_y.to(device, non_blocking=True)
     N = trn_X.size(0)
 
-    print(model.location)
+    print(model._parameters)
     model = model.to(device).copy().send(trn_X.location)
-    print(model.location)
+    print(model._parameters)
     # model = model.to(device)
 
     # phase 2. architect step (alpha)
