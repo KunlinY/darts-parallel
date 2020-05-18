@@ -126,7 +126,7 @@ class SearchCNNController(nn.Module):
 
     def loss(self, X, y):
         print("loss X", X.device)
-        print("loss alpha", self.alpha_normal.device)
+        print("loss alpha", self.alpha_normal[0].device)
         logits = self.forward(X)
         return self.criterion(logits, y)
 

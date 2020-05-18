@@ -56,6 +56,7 @@ class Architect():
             w_optim: weights optimizer - for virtual step
         """
         self.net = model
+        print("net", next(self.net.parameters()).device)
         # do virtual step (calc w`)
         self.virtual_step(trn_X, trn_y, xi, w_optim)
 

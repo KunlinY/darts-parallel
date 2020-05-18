@@ -160,6 +160,7 @@ def update(step, wid, model, alpha_optim, w_optim, architect, lr):
     print("to", model.alpha_normal[0].device)
     model = model.to(device).copy().send(trn_X.location)
     print(next(model.parameters()).device, device)
+    print("trn_X", trn_X.device)
     print("to", model.alpha_normal[0].device)
 
     # phase 2. architect step (alpha)
