@@ -149,14 +149,23 @@ async def main():
 def update(step, wid, model, alpha_optim, w_optim, architect, lr):
     device = torch.device('cuda:' + str(wid))
 
+    for w in workers:
+        print(w.id, 'has objects ', len(w._objects))
+
     trn_X, trn_y = remote_train_data[wid][step]
     trn_X, trn_y = trn_X.to(device, non_blocking=True), trn_y.to(device, non_blocking=True)
     val_X, val_y = remote_valid_data[wid][step]
     val_X, val_y = val_X.to(device, non_blocking=True), val_y.to(device, non_blocking=True)
     N = trn_X.size(0)
 
+    for w in workers:
+        print(w.id, 'has objects ', len(w._objects))
+
     model.send(trn_X.location)
-    model.to(device)
+    model = model.to(device)
+
+    for w in workers:
+        print(w.id, 'has objects ', len(w._objects))
 
     # phase 2. architect step (alpha)
     alpha_optim.zero_grad()
