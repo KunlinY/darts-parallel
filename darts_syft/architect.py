@@ -31,12 +31,16 @@ class Architect():
             w_optim: weights optimizer
         """
         # forward & calc loss
-        loss = self.net.loss(trn_X, trn_y) # L_trn(w)
+        net = self.net.copy().get()
+        loss = net.loss(trn_X.copy().get(), trn_y.copy().get())
+        # loss = self.net.loss(trn_X, trn_y) # L_trn(w)
 
         # compute gradient
         print(loss)
-        weights = [w.copy().get() for w in self.net.weights()]
-        gradients = torch.autograd.grad(loss.get(), weights, allow_unused=True)
+        # weights = [w.copy().get() for w in self.net.weights()]
+        gradients = torch.autograd.grad(loss, net.weights())
+        print(gradients)
+        gradients.send(trn_X.location)
         # gradients = torch.autograd.grad(loss, self.net.weights())
 
         # do virtual step (update gradient)
@@ -47,7 +51,7 @@ class Architect():
             for w, vw, g in zip(self.net.weights(), self.v_net.weights(), gradients):
                 print(w, vw, g)
                 m = w_optim.state[w].get('momentum_buffer', 0.) * self.w_momentum
-                vw.copy_(w - xi * (m + g.send(trn_X.location) + self.w_weight_decay*w))
+                vw.copy_(w - xi * (m + g + self.w_weight_decay*w))
 
             # synchronize alphas
             for a, va in zip(self.net.alphas(), self.v_net.alphas()):
