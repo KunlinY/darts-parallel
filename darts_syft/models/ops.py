@@ -195,4 +195,8 @@ class MixedOp(nn.Module):
             x: input
             weights: weight for each operation
         """
-        return sum(w * op(x) for w, op in zip(weights, self._ops))
+        wl = []
+        for i in weights:
+            wl.append(i.send(x.location))
+
+        return sum(w * op(x) for w, op in zip(wl, self._ops))
