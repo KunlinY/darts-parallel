@@ -47,8 +47,7 @@ class SearchCell(nn.Module):
         states = [s0.copy().get(), s1.copy().get()]
         for edges, w_list in zip(self.dag, w_dag):
             w_list = w_list.copy().get()
-            edges = edges.copy().get()
-            s_cur = sum(edges[i](s, w) for i, (s, w) in enumerate(zip(states, w_list)))
+            s_cur = sum(edges[i].copy().get()(s, w) for i, (s, w) in enumerate(zip(states, w_list)))
             states.append(s_cur)
 
         s_out = torch.cat(states[2:], dim=1)
