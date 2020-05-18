@@ -48,6 +48,7 @@ class SearchCell(nn.Module):
         for edges, w_list in zip(self.dag, w_dag):
             w_list = w_list.copy().get()
             for i, (s, w) in enumerate(zip(states, w_list)):
+                print("i", i)
                 print("s", s)
                 print("w", w)
                 print("edges[i](s, w)", edges[i](s, w))
