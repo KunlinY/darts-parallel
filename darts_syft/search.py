@@ -161,10 +161,10 @@ def update(step, wid, model, alpha_optim, w_optim, architect, lr):
     for w in workers:
         print(w.id, 'has objects ', len(w._objects))
 
-    print(model)
+    print(model.location)
     model = model.copy().send(trn_X.location)
-    print(model)
-    model = model.to(device)
+    print(model.location)
+    # model = model.to(device)
 
     for w in workers:
         print(w.id, 'has objects ', len(w._objects))
